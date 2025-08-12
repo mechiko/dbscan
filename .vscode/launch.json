@@ -1,0 +1,28 @@
+{
+    // Используйте IntelliSense, чтобы узнать о возможных атрибутах.
+    // Наведите указатель мыши, чтобы просмотреть описания существующих атрибутов.
+    // Для получения дополнительной информации посетите: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "name": "Launch gui64",
+        "type": "go",
+        "request": "launch",
+        "mode": "auto",
+        "program": "${workspaceFolder}/cmd",
+        "env": {
+          "GOOS": "windows",
+          "GOARCH": "amd64",
+          "CGO_ENABLED": "1",
+        },
+        "args": [
+          // "-db", "8faa496d-fda1-4f6b-b229-a330a8da63a0.db",
+          // "-file", "to.xlsx",
+          // "-inn",  "7719419749",
+          "-local"
+        ],
+        "buildFlags": ""
+        },
+    ]
+  }
+  
