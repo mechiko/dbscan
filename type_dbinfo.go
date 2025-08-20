@@ -22,6 +22,7 @@ type DbInfo struct {
 	Driver     string
 	Connection string
 	Exists     bool // только для sqlite делает поиск файла
+	Path       string
 }
 
 type ListDbInfoForScan map[DbInfoType]*DbInfo

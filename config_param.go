@@ -18,7 +18,7 @@ func (p *Parameters) Store(sess db.Session) db.Store {
 }
 
 func (dd *dbs) fromConfig(config *DbInfo, key string) (out string, err error) {
-	var dbs db.Session
+	var sess db.Session
 	out = ""
 	defer func() {
 		if r := recover(); r != nil {
@@ -38,19 +38,19 @@ func (dd *dbs) fromConfig(config *DbInfo, key string) (out string, err error) {
 				"_journal_mode": "DELETE",
 			},
 		}
-		dbs, err = sqlite.Open(uri)
+		sess, err = sqlite.Open(uri)
 		if err != nil {
 			return "", fmt.Errorf("dbscan:fromconfig %s", err.Error())
 		}
 		defer func() {
-			if errClose := dbs.Close(); err != nil {
+			if errClose := sess.Close(); err != nil {
 				// Go 1.20+: joins parse error (if any) with close error
 				err = errors.Join(err, fmt.Errorf("close %s: %w", config.File, errClose))
 			}
 		}()
 	}
 	param := &Parameters{}
-	if err = dbs.Get(param, db.Cond{"name": key}); err != nil {
+	if err = sess.Get(param, db.Cond{"name": key}); err != nil {
 		return "", fmt.Errorf("dbscan %s %v", config.File, err)
 	}
 	return param.Value, nil

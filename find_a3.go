@@ -10,8 +10,8 @@ import (
 
 var reA3DbName = regexp.MustCompile(`^0[0-9]{11}\.db$`)
 
-func findA3DbName() string {
-	if files, err := utility.FilteredSearchOfDirectoryTree(reA3DbName, ""); err != nil {
+func findA3DbName(dir string) string {
+	if files, err := utility.FilteredSearchOfDirectoryTree(reA3DbName, dir); err != nil {
 		return ""
 	} else {
 		if len(files) == 0 {
@@ -21,11 +21,12 @@ func findA3DbName() string {
 	}
 }
 
-func findA3Name() string {
-	findName := findA3DbName()
+func findA3Name(dir string) string {
+	findName := findA3DbName(dir)
 	if findName == "" {
 		return ""
 	}
-	ext := filepath.Ext(findName)
-	return strings.TrimSuffix(findName, ext)
+	base := filepath.Base(findName)
+	ext := filepath.Ext(base)
+	return strings.TrimSuffix(base, ext)
 }

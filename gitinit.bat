@@ -1,4 +1,4 @@
-git init
+git init -b main
 git config user.name "mechiko"
 git config user.email "kbprime@gmail.com"
 git config core.filemode false

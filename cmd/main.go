@@ -6,6 +6,7 @@ import (
 	"path/filepath"
 
 	"github.com/mechiko/dbscan"
+	"github.com/mechiko/utility"
 	"go.uber.org/zap"
 )
 
@@ -22,20 +23,22 @@ func main() {
 	sugar := logger.Sugar()
 	app := NewApp(sugar, dir)
 	list := make(dbscan.ListDbInfoForScan)
-	list[dbscan.Config] = &dbscan.DbInfo{
-		File:   "config.db",
-		Driver: "sqlite",
-	}
-	list[dbscan.Other] = &dbscan.DbInfo{
-		File:   "4zupper.db",
-		Name:   "zupper",
-		Driver: "sqlite",
-	}
+	// list[dbscan.Config] = &dbscan.DbInfo{
+	// 	File:   "config.db",
+	// 	Driver: "sqlite",
+	// }
+	// list[dbscan.Other] = &dbscan.DbInfo{
+	// 	File:   "4zupper.db",
+	// 	Name:   "zupper",
+	// 	Driver: "sqlite",
+	// 	Path:   `.nevakod\4zupper`,
+	// }
 	list[dbscan.A3] = &dbscan.DbInfo{}
-	list[dbscan.TrueZnak] = &dbscan.DbInfo{}
-	dbs, err := dbscan.New(app, list, app.pwd)
+	// list[dbscan.TrueZnak] = &dbscan.DbInfo{}
+	dbs, err := dbscan.New(app, list, app.Pwd())
 	if err != nil {
 		sugar.Errorf("ошибка создания %v", err)
+		utility.MessageBox("ошибка", err.Error())
 		os.Exit(-1)
 	}
 	sugar.Info(dbs)

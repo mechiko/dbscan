@@ -7,17 +7,25 @@ import (
 
 // name driver должны быть заполнены
 // file если пусто будет вычислен из name добавлением .db
-func (d *dbs) ParseDbInfo(dbPath string, info *DbInfo) (dbi *DbInfo, err error) {
+func (d *dbs) ParseDbInfo(info *DbInfo) (dbi *DbInfo, err error) {
 	defer func() {
 		if r := recover(); r != nil {
 			err = fmt.Errorf("%v", r)
 		}
 	}()
-	if !filepath.IsAbs(info.File) {
-		info.File = filepath.Join(dbPath, info.File)
+	// Derive effective file path without mutating input
+	filePath := info.File
+	if filePath == "" && info.Driver == "sqlite" {
+		if info.Name == "" {
+			return nil, fmt.Errorf("%s отсутствует имя базы данных для sqlite", modError)
+		}
+		filePath = filepath.Join(info.Path, info.Name+".db")
+	}
+	if filePath != "" && !filepath.IsAbs(filePath) {
+		filePath = filepath.Join(info.Path, filePath)
 	}
 	dbi = &DbInfo{
-		File:   info.File,
+		File:   filePath,
 		Driver: info.Driver,
 		Name:   info.Name,
 		Host:   info.Host,
@@ -26,7 +34,7 @@ func (d *dbs) ParseDbInfo(dbPath string, info *DbInfo) (dbi *DbInfo, err error) 
 		Exists: false,
 	}
 	if err := d.IsConnected(dbi); err != nil {
-		return nil, fmt.Errorf("is connected %w", err)
+		return nil, fmt.Errorf("ошибка %w", err)
 	} else {
 		dbi.Exists = true
 	}

@@ -13,7 +13,7 @@
         "env": {
           "GOOS": "windows",
           "GOARCH": "amd64",
-          "CGO_ENABLED": "1",
+          "CGO_ENABLED": "1"
         },
         "args": [
           // "-db", "8faa496d-fda1-4f6b-b229-a330a8da63a0.db",
