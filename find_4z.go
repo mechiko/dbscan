@@ -14,6 +14,9 @@ import (
 var trueRegex = regexp.MustCompile(`^[a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12}\.db$`)
 
 func find4zDbName(dir string) string {
+	if dir == "" {
+		dir = "."
+	}
 	if files, err := utility.FilteredSearchOfDirectoryTree(trueRegex, dir); err != nil {
 		return ""
 	} else {

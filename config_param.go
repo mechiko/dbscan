@@ -3,6 +3,7 @@ package dbscan
 import (
 	"errors"
 	"fmt"
+	"path/filepath"
 
 	"github.com/upper/db/v4"
 	"github.com/upper/db/v4/adapter/sqlite"
@@ -32,7 +33,7 @@ func (dd *dbs) fromConfig(config *DbInfo, key string) (out string, err error) {
 	switch config.Driver {
 	case "sqlite":
 		uri := sqlite.ConnectionURL{
-			Database: config.File,
+			Database: filepath.Join(config.Path, config.File),
 			Options: map[string]string{
 				"mode":          "rw",
 				"_journal_mode": "DELETE",

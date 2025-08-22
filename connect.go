@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"path/filepath"
 
 	"github.com/mechiko/utility"
 
@@ -12,7 +13,8 @@ import (
 	"github.com/upper/db/v4/adapter/sqlite"
 )
 
-func (d *dbs) IsConnected(info *DbInfo) (err error) {
+// func (d *dbs) IsConnected(info *DbInfo) (err error) {
+func IsConnected(info *DbInfo) (err error) {
 	var dbSess db.Session
 	defer func() {
 		if r := recover(); r != nil {
@@ -24,14 +26,15 @@ func (d *dbs) IsConnected(info *DbInfo) (err error) {
 		if info.File == "" {
 			return fmt.Errorf("%s отсутствуют имя файла базы данных для sqlite", modError)
 		}
-		if !utility.PathOrFileExists(info.File) {
+		resultFilePath := filepath.Join(info.Path, info.File)
+		if !utility.PathOrFileExists(resultFilePath) {
 			return fmt.Errorf("%s отсутствует файл базы данных %s для sqlite", modError, info.File)
 		}
 		// если указан не файл а путь к каталогу
-		if st, statErr := os.Stat(info.File); statErr != nil || !st.Mode().IsRegular() {
-			return fmt.Errorf("%s путь %s не является файлом sqlite", modError, info.File)
+		if st, statErr := os.Stat(resultFilePath); statErr != nil || !st.Mode().IsRegular() {
+			return fmt.Errorf("%s путь %s не является файлом sqlite", modError, resultFilePath)
 		}
-		uri := info.SqliteUri()
+		uri := info.SqliteUri(resultFilePath)
 		dbSess, err = sqlite.Open(uri)
 		if err != nil {
 			return fmt.Errorf("%s ошибка подключения %v", modError, err)

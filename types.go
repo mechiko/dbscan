@@ -5,29 +5,30 @@ import (
 	"fmt"
 	"strings"
 
-	"go.uber.org/zap"
+	"github.com/mechiko/utility"
 )
 
 const modError = "dbscan"
 
-type Apper interface {
-	Logger() *zap.SugaredLogger
-	Pwd() string
-	ConfigPath() string
-	DbPath() string
-}
+// type Apper interface {
+// 	Logger() *zap.SugaredLogger
+// 	Pwd() string
+// 	ConfigPath() string
+// 	DbPath() string
+// }
 
 type dbs struct {
-	Apper
+	// Apper
 	path  string
 	infos ListDbInfoForScan
 }
 
 // dbPath путь сканирования БД A3 и 4Z
 // listInfo описатели для всех БД
-func New(app Apper, listInfo ListDbInfoForScan, dbPath string) (d *dbs, err error) {
+// пустой путь перезаписывается на текущий "."
+func New(listInfo ListDbInfoForScan, dbPath string) (d *dbs, err error) {
 	d = &dbs{
-		Apper: app,
+		// Apper: app,
 		path:  dbPath,
 		infos: make(ListDbInfoForScan),
 	}
@@ -36,7 +37,13 @@ func New(app Apper, listInfo ListDbInfoForScan, dbPath string) (d *dbs, err erro
 			err = errors.Join(err, fmt.Errorf("panic %s: %v", modError, r))
 		}
 	}()
-
+	if dbPath != "" && !utility.PathOrFileExists(dbPath) {
+		return nil, fmt.Errorf("path %s not present", dbPath)
+	}
+	// для поиска файлов надо точку
+	if dbPath == "" {
+		dbPath = "."
+	}
 	fsrarId := ""
 	file4z := ""
 	dbType := "sqlite"
@@ -45,7 +52,11 @@ func New(app Apper, listInfo ListDbInfoForScan, dbPath string) (d *dbs, err erro
 		if config.Path == "" {
 			config.Path = dbPath
 		}
-		configParsedInfo, err := d.ParseDbInfo(config)
+		// only sqlite config.db
+		config.Driver = "sqlite"
+		config.File = "config.db"
+		// проверяем структуру и пробуем коннект
+		configParsedInfo, err := ParseDbInfo(config)
 		if err != nil {
 			return nil, fmt.Errorf("dbscan parse config info %w", err)
 		}
@@ -74,7 +85,7 @@ func New(app Apper, listInfo ListDbInfoForScan, dbPath string) (d *dbs, err erro
 		if other.Path == "" {
 			other.Path = dbPath
 		}
-		otherParsedInfo, err := d.ParseDbInfo(other)
+		otherParsedInfo, err := ParseDbInfo(other)
 		if err != nil {
 			return nil, fmt.Errorf("dbscan parse other info %w", err)
 		}
@@ -93,7 +104,7 @@ func New(app Apper, listInfo ListDbInfoForScan, dbPath string) (d *dbs, err erro
 		if a3.File == "" {
 			a3.File = a3.Name + ".db"
 		}
-		a3ParsedInfo, err := d.ParseDbInfo(a3)
+		a3ParsedInfo, err := ParseDbInfo(a3)
 		if err != nil {
 			return nil, fmt.Errorf("dbscan parse a3 info %w", err)
 		}
@@ -112,7 +123,7 @@ func New(app Apper, listInfo ListDbInfoForScan, dbPath string) (d *dbs, err erro
 		if trueZnak.File == "" {
 			trueZnak.File = trueZnak.Name + ".db"
 		}
-		trueParsedInfo, err := d.ParseDbInfo(trueZnak)
+		trueParsedInfo, err := ParseDbInfo(trueZnak)
 		if err != nil {
 			return nil, fmt.Errorf("dbscan parse trueznak info %w", err)
 		}

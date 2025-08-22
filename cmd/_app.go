@@ -1,7 +1,6 @@
 package main
 
 import (
-	"github.com/mechiko/dbscan"
 	"go.uber.org/zap"
 )
 
@@ -10,7 +9,7 @@ type app struct {
 	pwd   string
 }
 
-var _ dbscan.Apper = (*app)(nil)
+// var _ dbscan.Apper = (*app)(nil)
 
 func NewApp(logger *zap.SugaredLogger, pwd string) *app {
 	newApp := &app{}

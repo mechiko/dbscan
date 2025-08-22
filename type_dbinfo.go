@@ -68,9 +68,9 @@ func (d *DbInfo) MssqlUri() *mssql.ConnectionURL {
 	return uri
 }
 
-func (d *DbInfo) SqliteUri() *sqlite.ConnectionURL {
+func (d *DbInfo) SqliteUri(file string) *sqlite.ConnectionURL {
 	uri := &sqlite.ConnectionURL{
-		Database: d.File,
+		Database: file,
 		Options: map[string]string{
 			"mode":          "rw",
 			"_journal_mode": "DELETE",
