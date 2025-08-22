@@ -29,7 +29,6 @@ type dbs struct {
 func New(listInfo ListDbInfoForScan, dbPath string) (d *dbs, err error) {
 	d = &dbs{
 		// Apper: app,
-		path:  dbPath,
 		infos: make(ListDbInfoForScan),
 	}
 	defer func() {
@@ -44,11 +43,12 @@ func New(listInfo ListDbInfoForScan, dbPath string) (d *dbs, err error) {
 	if dbPath == "" {
 		dbPath = "."
 	}
+	d.path = dbPath
 	fsrarId := ""
 	file4z := ""
 	dbType := "sqlite"
 	// если Config есть в списке
-	if config := listInfo.Info(Config); config != nil {
+	if config, ok := listInfo[Config]; ok && config != nil {
 		if config.Path == "" {
 			config.Path = dbPath
 		}
@@ -81,7 +81,7 @@ func New(listInfo ListDbInfoForScan, dbPath string) (d *dbs, err error) {
 	if file4z == "" {
 		file4z = find4zName(dbPath)
 	}
-	if other := listInfo.Info(Other); other != nil {
+	if other, ok := listInfo[Other]; ok && other != nil {
 		if other.Path == "" {
 			other.Path = dbPath
 		}
@@ -91,7 +91,7 @@ func New(listInfo ListDbInfoForScan, dbPath string) (d *dbs, err error) {
 		}
 		d.infos[Other] = otherParsedInfo
 	}
-	if a3 := listInfo.Info(A3); a3 != nil {
+	if a3, ok := listInfo[A3]; ok && a3 != nil {
 		if a3.Path == "" {
 			a3.Path = dbPath
 		}
@@ -101,16 +101,13 @@ func New(listInfo ListDbInfoForScan, dbPath string) (d *dbs, err error) {
 		if a3.Name == "" {
 			a3.Name = fsrarId
 		}
-		if a3.File == "" {
-			a3.File = a3.Name + ".db"
-		}
 		a3ParsedInfo, err := ParseDbInfo(a3)
 		if err != nil {
 			return nil, fmt.Errorf("dbscan parse a3 info %w", err)
 		}
 		d.infos[A3] = a3ParsedInfo
 	}
-	if trueZnak := listInfo.Info(TrueZnak); trueZnak != nil {
+	if trueZnak, ok := listInfo[TrueZnak]; ok && trueZnak != nil {
 		if trueZnak.Path == "" {
 			trueZnak.Path = dbPath
 		}
@@ -119,9 +116,6 @@ func New(listInfo ListDbInfoForScan, dbPath string) (d *dbs, err error) {
 		}
 		if trueZnak.Name == "" {
 			trueZnak.Name = file4z
-		}
-		if trueZnak.File == "" {
-			trueZnak.File = trueZnak.Name + ".db"
 		}
 		trueParsedInfo, err := ParseDbInfo(trueZnak)
 		if err != nil {

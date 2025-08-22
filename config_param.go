@@ -23,7 +23,11 @@ func (dd *dbs) fromConfig(config *DbInfo, key string) (out string, err error) {
 	out = ""
 	defer func() {
 		if r := recover(); r != nil {
-			err = errors.Join(err, fmt.Errorf("panic %s: %v", config.File, r))
+			file := "<nil>"
+			if config != nil {
+				file = config.File
+			}
+			err = errors.Join(err, fmt.Errorf("panic %s: %v", file, r))
 		}
 	}()
 
@@ -41,14 +45,16 @@ func (dd *dbs) fromConfig(config *DbInfo, key string) (out string, err error) {
 		}
 		sess, err = sqlite.Open(uri)
 		if err != nil {
-			return "", fmt.Errorf("dbscan:fromconfig %s", err.Error())
+			return "", fmt.Errorf("dbscan:fromconfig open %w", err)
 		}
 		defer func() {
-			if errClose := sess.Close(); err != nil {
+			if errClose := sess.Close(); errClose != nil {
 				// Go 1.20+: joins parse error (if any) with close error
 				err = errors.Join(err, fmt.Errorf("close %s: %w", config.File, errClose))
 			}
 		}()
+	default:
+		return "", fmt.Errorf("dbscan: fromConfig unsupported driver %q; only sqlite is supported", config.Driver)
 	}
 	param := &Parameters{}
 	if err = sess.Get(param, db.Cond{"name": key}); err != nil {

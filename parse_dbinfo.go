@@ -20,10 +20,10 @@ func ParseDbInfo(info *DbInfo) (dbi *DbInfo, err error) {
 	}
 	if info.Driver == "sqlite" {
 		if info.File == "" {
-			// пытаемся его из name сделать
 			if info.Name == "" {
 				return nil, fmt.Errorf("%s отсутствует имя базы данных для sqlite", modError)
 			}
+			info.File = info.Name + ".db"
 		}
 		filePathDir = filepath.Dir(info.File)
 		if filePathDir == "." {

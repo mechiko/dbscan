@@ -1,6 +1,6 @@
 module github.com/mechiko/dbscan
 
-go 1.24.6
+go 1.24
 
 require (
 	github.com/mechiko/utility v0.0.0-20250821050810-49544d80570c

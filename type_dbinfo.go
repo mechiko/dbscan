@@ -27,7 +27,7 @@ type DbInfo struct {
 
 type ListDbInfoForScan map[DbInfoType]*DbInfo
 
-func IsValideDbInfoType(s string) bool {
+func IsValidDbInfoType(s string) bool {
 	switch DbInfoType(s) {
 	case Config, A3, TrueZnak, Other:
 		return true
