@@ -127,8 +127,6 @@ $RECYCLE.BIN/
 ## S/MIME message
 *.smime
 
-build/bin
-node_modules/
 dist/
 distr/
 distrib/
@@ -137,6 +135,7 @@ distbin/
 .nevakod/
 .dist/
 .data/
+.vscode/
 
 # Binaries for programs and plugins
 *.exe
@@ -151,6 +150,10 @@ distbin/
 *.db
 *.db.*
 *.db-*
+
+*.csv
+*.xls
+*.xlsx
 
 /test
 
