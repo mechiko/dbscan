@@ -18,7 +18,7 @@ func (p *Parameters) Store(sess db.Session) db.Store {
 	return sess.Collection("parameters")
 }
 
-func (dd *dbs) fromConfig(config *DbInfo, key string) (out string, err error) {
+func (dd *Dbs) fromConfig(config *DbInfo, key string) (out string, err error) {
 	var sess db.Session
 	out = ""
 	defer func() {
