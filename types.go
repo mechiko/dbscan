@@ -17,7 +17,7 @@ const modError = "dbscan"
 // 	DbPath() string
 // }
 
-type dbs struct {
+type Dbs struct {
 	// Apper
 	path  string
 	infos ListDbInfoForScan
@@ -26,8 +26,8 @@ type dbs struct {
 // dbPath путь сканирования БД A3 и 4Z
 // listInfo описатели для всех БД
 // пустой путь перезаписывается на текущий "."
-func New(listInfo ListDbInfoForScan, dbPath string) (d *dbs, err error) {
-	d = &dbs{
+func New(listInfo ListDbInfoForScan, dbPath string) (d *Dbs, err error) {
+	d = &Dbs{
 		// Apper: app,
 		infos: make(ListDbInfoForScan),
 	}
@@ -126,7 +126,7 @@ func New(listInfo ListDbInfoForScan, dbPath string) (d *dbs, err error) {
 	return d, nil
 }
 
-func (d *dbs) Info(t DbInfoType) *DbInfo {
+func (d *Dbs) Info(t DbInfoType) *DbInfo {
 	if dbi, ok := d.infos[t]; ok {
 		return dbi
 	}
