@@ -51,7 +51,8 @@ func (d *DbInfo) Connect() (sess db.Session, err error) {
 	}
 	err = sess.Ping()
 	if err != nil {
-		return nil, fmt.Errorf("%s ошибка ping %v", modError, err)
+		_ = sess.Close() // best-effort cleanup
+		return nil, fmt.Errorf("%s ошибка ping %w", modError, err)
 	}
 	// пинг успешен
 	return sess, nil
