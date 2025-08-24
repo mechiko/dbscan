@@ -36,6 +36,22 @@ func TestNew(t *testing.T) {
 				// ожидаем отсутствие ошибки
 				assert.Nil(t, err)
 			}
+			// if !tt.err {
+			// 	if _, hasOther := tt.list[Other]; hasOther {
+			// 		got := dbs.Info(Other)
+			// 		assert.NotNil(t, got)
+			// 		assert.Equal(t, tt.list[Other].Driver, got.Driver)
+			// 		// Path defaults to "." when tt.dir == ""
+			// 		expPath := tt.dir
+			// 		if expPath == "" {
+			// 			expPath = "."
+			// 		}
+			// 		assert.Equal(t, expPath, got.Path)
+			// 		assert.Equal(t, tt.list[Other].File, got.File)
+			// 		// Since parse may fail for Other, Exists can be either; just assert it’s a boolean (no panic).
+			// 		_ = got.Exists
+			// 	}
+			// }
 		})
 	}
 }
