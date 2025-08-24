@@ -23,12 +23,29 @@ func TestIsConnect(t *testing.T) {
 	// The execution loop
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			err := IsConnected(&tt.input)
+			err := tt.input.IsConnected()
 			if tt.err {
 				assert.NotNil(t, err)
 			} else {
 				// ожидаем отсутствие ошибки
 				assert.Nil(t, err)
+			}
+		})
+	}
+}
+
+func TestConnect(t *testing.T) {
+	// The execution loop
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			sess, err := tt.input.Connect()
+			if tt.err {
+				assert.NotNil(t, err)
+			} else {
+				// ожидаем отсутствие ошибки
+				assert.Nil(t, err)
+				pingErr := sess.Ping()
+				assert.Nil(t, pingErr)
 			}
 		})
 	}

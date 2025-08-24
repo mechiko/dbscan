@@ -1,7 +1,6 @@
 package dbscan
 
 import (
-	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -14,60 +13,46 @@ import (
 )
 
 // func (d *dbs) IsConnected(info *DbInfo) (err error) {
-func IsConnected(info *DbInfo) (err error) {
-	var dbSess db.Session
+func (d *DbInfo) Connect() (sess db.Session, err error) {
 	defer func() {
 		if r := recover(); r != nil {
 			err = fmt.Errorf("%v", r)
 		}
 	}()
-	switch info.Driver {
+	switch d.Driver {
 	case "sqlite":
-		if info.File == "" {
-			return fmt.Errorf("%s отсутствуют имя файла базы данных для sqlite", modError)
+		if d.File == "" {
+			return nil, fmt.Errorf("%s отсутствуют имя файла базы данных для sqlite", modError)
 		}
-		resultFilePath := filepath.Join(info.Path, info.File)
+		resultFilePath := filepath.Join(d.Path, d.File)
 		if !utility.PathOrFileExists(resultFilePath) {
-			return fmt.Errorf("%s отсутствует файл базы данных %s для sqlite", modError, info.File)
+			return nil, fmt.Errorf("%s отсутствует файл базы данных %s для sqlite", modError, d.File)
 		}
 		// если указан не файл а путь к каталогу
 		if st, statErr := os.Stat(resultFilePath); statErr != nil || !st.Mode().IsRegular() {
-			return fmt.Errorf("%s путь %s не является файлом sqlite", modError, resultFilePath)
+			return nil, fmt.Errorf("%s путь %s не является файлом sqlite", modError, resultFilePath)
 		}
-		uri := info.SqliteUri(resultFilePath)
-		dbSess, err = sqlite.Open(uri)
+		uri := d.SqliteUri(resultFilePath)
+		sess, err = sqlite.Open(uri)
 		if err != nil {
-			return fmt.Errorf("%s ошибка подключения %v", modError, err)
+			return nil, fmt.Errorf("%s ошибка подключения %v", modError, err)
 		}
-		defer func() {
-			if errSess := dbSess.Close(); errSess != nil {
-				// Go 1.20+: joins parse error (if any) with close error
-				err = errors.Join(err, fmt.Errorf("close session %w", errSess))
-			}
-		}()
 	case "mssql":
-		if info.Name == "" {
-			return fmt.Errorf("%s отсутствуют имя базы данных для Other", modError)
+		if d.Name == "" {
+			return nil, fmt.Errorf("%s отсутствуют имя базы данных для Other", modError)
 		}
-		uri := info.MssqlUri()
-		dbSess, err = mssql.Open(uri)
+		uri := d.MssqlUri()
+		sess, err = mssql.Open(uri)
 		if err != nil {
-			return fmt.Errorf("%s %s", modError, err.Error())
+			return nil, fmt.Errorf("%s %s", modError, err.Error())
 		}
-		defer func() {
-			if errSess := dbSess.Close(); errSess != nil {
-				// Go 1.20+: joins parse error (if any) with close error
-				err = errors.Join(err, fmt.Errorf("close session %w", errSess))
-			}
-		}()
 	default:
-		return fmt.Errorf("%s ошибка driver %v", modError, info.Driver)
+		return nil, fmt.Errorf("%s ошибка driver %v", modError, d.Driver)
 	}
-	err = dbSess.Ping()
+	err = sess.Ping()
 	if err != nil {
-		return fmt.Errorf("%s ошибка ping %v", modError, err)
+		return nil, fmt.Errorf("%s ошибка ping %v", modError, err)
 	}
 	// пинг успешен
-	return nil
-
+	return sess, nil
 }

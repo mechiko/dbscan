@@ -43,7 +43,7 @@ func ParseDbInfo(info *DbInfo) (dbi *DbInfo, err error) {
 		Pass:   info.Pass,
 		Exists: false,
 	}
-	if err := IsConnected(dbi); err != nil {
+	if err := dbi.IsConnected(); err != nil {
 		return nil, fmt.Errorf("ошибка %w", err)
 	} else {
 		dbi.Exists = true
