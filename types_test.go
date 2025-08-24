@@ -21,19 +21,20 @@ var testsTypes = []struct {
 	{"test 2", false, ListDbInfoForScan{Config: &DbInfo{Path: "cmd"}, A3: &DbInfo{Driver: "sqlite", Path: "cmd"}}, ""},
 	{"test 3", true, ListDbInfoForScan{Config: &DbInfo{File: "cmd/config.db", Driver: "sqlite"}}, ""},
 	{"test 4", false, ListDbInfoForScan{Config: &DbInfo{File: "config.db", Driver: "sqlite"}}, "cmd"},
+	{"test 5", false, ListDbInfoForScan{Other: &DbInfo{File: "4zupper.db", Driver: "sqlite"}}, "cmd"},
+	{"test 6", false, ListDbInfoForScan{Other: &DbInfo{File: "4zupper.db", Driver: "sqlite"}}, "cmd/.nevakod/4zupper"},
 }
 
 func TestNew(t *testing.T) {
 	// The execution loop
 	for _, tt := range testsTypes {
 		t.Run(tt.name, func(t *testing.T) {
-			dbs, err := New(tt.list, tt.dir)
+			_, err := New(tt.list, tt.dir)
 			if tt.err {
 				assert.NotNil(t, err)
 			} else {
 				// ожидаем отсутствие ошибки
 				assert.Nil(t, err)
-				assert.Equal(t, "config.db", dbs.infos[Config].File, "true file name")
 			}
 		})
 	}

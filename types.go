@@ -81,15 +81,17 @@ func New(listInfo ListDbInfoForScan, dbPath string) (d *Dbs, err error) {
 	if file4z == "" {
 		file4z = find4zName(dbPath)
 	}
+	// other error parse and ping ignored and save
 	if other, ok := listInfo[Other]; ok && other != nil {
 		if other.Path == "" {
 			other.Path = dbPath
 		}
 		otherParsedInfo, err := ParseDbInfo(other)
 		if err != nil {
-			return nil, fmt.Errorf("dbscan parse other info %w", err)
+			d.infos[Other] = other
+		} else {
+			d.infos[Other] = otherParsedInfo
 		}
-		d.infos[Other] = otherParsedInfo
 	}
 	if a3, ok := listInfo[A3]; ok && a3 != nil {
 		if a3.Path == "" {
