@@ -81,15 +81,21 @@ func New(listInfo ListDbInfoForScan, dbPath string) (d *Dbs, err error) {
 	if file4z == "" {
 		file4z = find4zName(dbPath)
 	}
+	// Other: ignore parse/connect errors; save a defensive copy so callers can inspect it later
 	if other, ok := listInfo[Other]; ok && other != nil {
 		if other.Path == "" {
 			other.Path = dbPath
 		}
 		otherParsedInfo, err := ParseDbInfo(other)
 		if err != nil {
-			return nil, fmt.Errorf("dbscan parse other info %w", err)
+			// Defensive copy to avoid aliasing with the caller's map entry.
+			cp := *other
+			// Make the state explicit: not validated/connected.
+			cp.Exists = false
+			d.infos[Other] = &cp
+		} else {
+			d.infos[Other] = otherParsedInfo
 		}
-		d.infos[Other] = otherParsedInfo
 	}
 	if a3, ok := listInfo[A3]; ok && a3 != nil {
 		if a3.Path == "" {
