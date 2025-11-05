@@ -47,6 +47,9 @@ func New(listInfo ListDbInfoForScan, dbPath string) (d *Dbs, err error) {
 	fsrarId := ""
 	file4z := ""
 	dbType := "sqlite"
+	host := ""
+	user := ""
+	pass := ""
 	// если Config есть в списке
 	if config, ok := listInfo[Config]; ok && config != nil {
 		if config.Path == "" {
@@ -74,6 +77,18 @@ func New(listInfo ListDbInfoForScan, dbPath string) (d *Dbs, err error) {
 			return nil, fmt.Errorf("dbscan fromConfig %w", err)
 		}
 		dbType = strings.ToLower(dbType)
+		host, err = d.fromConfig(config, "db_server")
+		if err != nil {
+			return nil, fmt.Errorf("dbscan fromConfig %w", err)
+		}
+		user, err = d.fromConfig(config, "db_user")
+		if err != nil {
+			return nil, fmt.Errorf("dbscan fromConfig %w", err)
+		}
+		pass, err = d.fromConfig(config, "db_pass")
+		if err != nil {
+			return nil, fmt.Errorf("dbscan fromConfig %w", err)
+		}
 	}
 	if fsrarId == "" {
 		fsrarId = findA3Name(dbPath)
@@ -107,6 +122,15 @@ func New(listInfo ListDbInfoForScan, dbPath string) (d *Dbs, err error) {
 		if a3.Name == "" {
 			a3.Name = fsrarId
 		}
+		if a3.Host == "" {
+			a3.Host = host
+		}
+		if a3.User == "" {
+			a3.User = user
+		}
+		if a3.Pass == "" {
+			a3.Pass = pass
+		}
 		a3ParsedInfo, err := ParseDbInfo(a3)
 		if err != nil {
 			return nil, fmt.Errorf("dbscan parse a3 info %w", err)
@@ -122,6 +146,15 @@ func New(listInfo ListDbInfoForScan, dbPath string) (d *Dbs, err error) {
 		}
 		if trueZnak.Name == "" {
 			trueZnak.Name = file4z
+		}
+		if trueZnak.Host == "" {
+			trueZnak.Host = host
+		}
+		if trueZnak.User == "" {
+			trueZnak.User = user
+		}
+		if trueZnak.Pass == "" {
+			trueZnak.Pass = pass
 		}
 		trueParsedInfo, err := ParseDbInfo(trueZnak)
 		if err != nil {
